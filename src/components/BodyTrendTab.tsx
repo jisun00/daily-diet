@@ -33,6 +33,9 @@ const RANGE_MONTHS: Record<ChartRange, number | null> = {
   all: null,
 };
 
+// 툴팁이 항목을 가나다순으로 재정렬하지 않고, 그래프에 그려진 순서(몸무게 -> 골격근량 -> 체지방률)를 따르게 함
+const LINE_ORDER = ["몸무게", "골격근량", "체지방률"];
+
 export function BodyTrendTab() {
   const bodyLogs = useStore((s) => s.bodyLogs);
   const addBodyLog = useStore((s) => s.addBodyLog);
@@ -134,6 +137,7 @@ export function BodyTrendTab() {
                 <YAxis fontSize={12} stroke="var(--text-muted)" />
                 <Tooltip
                   contentStyle={{ background: "var(--surface)", borderColor: "var(--border)" }}
+                  itemSorter={(item) => LINE_ORDER.indexOf(String(item.dataKey))}
                 />
                 <Line type="monotone" dataKey="몸무게" stroke="#16a34a" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="골격근량" stroke="#3b82f6" strokeWidth={2} dot={false} />
