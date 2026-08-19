@@ -18,8 +18,12 @@ export const ACTIVITY_LABEL: Record<ActivityLevel, string> = {
 
 const KCAL_PER_KG_FAT = 7700;
 const MIN_SAFE_CALORIES = { male: 1500, female: 1200 };
+// 단백질: 체중 감량 중 근손실 최소화 기준 1.6g/kg
+// (Morton et al. 2018 meta-analysis, BJSM; ISSN Position Stand 2017 — 1.4-2.0g/kg 권장 범위)
 export const DEFAULT_PROTEIN_PER_KG = 1.6;
-export const DEFAULT_FAT_PER_KG = 0.8;
+// 지방: 체중이 아니라 "총 섭취 칼로리의 %"로 정하는 것이 표준.
+// 2025 한국인 영양소 섭취기준(KDRI) 에너지적정비율 지방 15-30% 중간값
+export const DEFAULT_FAT_PERCENT = 25;
 
 /** 체성분 기록이 있으면 가장 최근 몸무게를, 없으면 프로필의 몸무게를 사용 */
 export function resolveWeightKg(profile: Profile, bodyLogs: BodyLog[]): number {
@@ -87,12 +91,12 @@ export function calcDailyTargets(profile: Profile, goal: Goal): MacroTargets {
   }
 
   const proteinPerKg = goal.proteinPerKg > 0 ? goal.proteinPerKg : DEFAULT_PROTEIN_PER_KG;
-  const fatPerKg = goal.fatPerKg > 0 ? goal.fatPerKg : DEFAULT_FAT_PER_KG;
+  const fatPercent = goal.fatPercent > 0 ? goal.fatPercent : DEFAULT_FAT_PERCENT;
   const weightKg = profile.weightKg > 0 ? profile.weightKg : 0;
   const proteinG = Math.round(weightKg * proteinPerKg);
-  const fatG = Math.round(weightKg * fatPerKg);
+  const fatKcal = calories * (fatPercent / 100);
+  const fatG = Math.round(fatKcal / 9);
   const proteinKcal = proteinG * 4;
-  const fatKcal = fatG * 9;
   const carbKcal = Math.max(calories - proteinKcal - fatKcal, 0);
   const carbsG = Math.round(carbKcal / 4);
 

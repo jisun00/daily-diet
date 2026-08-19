@@ -29,7 +29,7 @@ export interface Goal {
   targetLossKg: number;
   // 매크로 비율 조정용 (g/kg), 기본값 사용 가능
   proteinPerKg: number;
-  fatPerKg: number;
+  fatPercent: number;
 }
 
 export interface FavoriteFood {

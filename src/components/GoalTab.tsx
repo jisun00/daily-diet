@@ -10,7 +10,7 @@ const defaultGoal: Goal = {
   weeks: 8,
   targetLossKg: 4,
   proteinPerKg: 1.6,
-  fatPerKg: 0.8,
+  fatPercent: 25,
 };
 
 export function GoalTab() {
@@ -70,11 +70,13 @@ export function GoalTab() {
 
           <details className="rounded-lg border px-3 py-2 text-sm" style={{ borderColor: "var(--border)" }}>
             <summary className="cursor-pointer select-none font-medium">
-              고급 설정: 단백질/지방 비율 (선택)
+              고급 설정: 단백질/지방 기준 (선택)
             </summary>
             <p className="mt-2 mb-3 text-xs" style={{ color: "var(--text-muted)" }}>
-              기본값(단백질 체중 1kg당 1.6g, 지방 0.8g)은 다이어트 중 근손실을 최소화하기 위해
-              일반적으로 권장되는 기준입니다. 특별한 이유가 없다면 그대로 두셔도 됩니다.
+              단백질 기본값(체중 1kg당 1.6g)은 다이어트 중 근손실을 최소화하는 기준으로 널리
+              쓰입니다(1.2~2.0g/kg 권장). 지방 기본값(칼로리의 25%)은 체중이 아니라 목표
+              칼로리 대비 비율로 정하는 게 표준이며, 한국인 영양소 섭취기준(KDRI)의 권장 범위인
+              15~30% 중간값입니다. 특별한 이유가 없다면 그대로 두셔도 됩니다.
             </p>
             <div className="grid grid-cols-2 gap-3">
               <Field label="단백질 (g/체중kg)">
@@ -84,11 +86,12 @@ export function GoalTab() {
                   onChange={(n) => setForm({ ...form, proteinPerKg: n })}
                 />
               </Field>
-              <Field label="지방 (g/체중kg)">
+              <Field label="지방 (% 칼로리)">
                 <NumberField
-                  value={form.fatPerKg}
+                  value={form.fatPercent}
                   min={0}
-                  onChange={(n) => setForm({ ...form, fatPerKg: n })}
+                  max={100}
+                  onChange={(n) => setForm({ ...form, fatPercent: n })}
                 />
               </Field>
             </div>
