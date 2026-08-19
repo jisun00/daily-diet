@@ -27,8 +27,11 @@ export function ProfileTab() {
     },
   );
 
+  const isValid = form.age > 0 && form.heightCm > 0 && form.weightKg > 0;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isValid) return;
     setProfile(form);
   };
 
@@ -97,7 +100,14 @@ export function ProfileTab() {
             </Field>
           </div>
           <div className="col-span-2 sm:col-span-3">
-            <Button type="submit">저장</Button>
+            <Button type="submit" disabled={!isValid}>
+              저장
+            </Button>
+            {!isValid && (
+              <span className="ml-2 text-xs" style={{ color: "var(--warn)" }}>
+                나이·키·몸무게는 0보다 큰 값이어야 합니다.
+              </span>
+            )}
           </div>
         </form>
         {latestBodyLogWeight !== null && (

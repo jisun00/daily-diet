@@ -18,6 +18,8 @@ export const ACTIVITY_LABEL: Record<ActivityLevel, string> = {
 
 const KCAL_PER_KG_FAT = 7700;
 const MIN_SAFE_CALORIES = { male: 1500, female: 1200 };
+export const DEFAULT_PROTEIN_PER_KG = 1.6;
+export const DEFAULT_FAT_PER_KG = 0.8;
 
 /** 체성분 기록이 있으면 가장 최근 몸무게를, 없으면 프로필의 몸무게를 사용 */
 export function resolveWeightKg(profile: Profile, bodyLogs: BodyLog[]): number {
@@ -84,8 +86,11 @@ export function calcDailyTargets(profile: Profile, goal: Goal): MacroTargets {
     warning = `계산된 목표 칼로리가 안전 최소치(${minSafe}kcal) 미만이라 ${minSafe}kcal로 조정했습니다. 감량 속도나 기간을 조정해 보세요.`;
   }
 
-  const proteinG = Math.round(profile.weightKg * goal.proteinPerKg);
-  const fatG = Math.round(profile.weightKg * goal.fatPerKg);
+  const proteinPerKg = goal.proteinPerKg > 0 ? goal.proteinPerKg : DEFAULT_PROTEIN_PER_KG;
+  const fatPerKg = goal.fatPerKg > 0 ? goal.fatPerKg : DEFAULT_FAT_PER_KG;
+  const weightKg = profile.weightKg > 0 ? profile.weightKg : 0;
+  const proteinG = Math.round(weightKg * proteinPerKg);
+  const fatG = Math.round(weightKg * fatPerKg);
   const proteinKcal = proteinG * 4;
   const fatKcal = fatG * 9;
   const carbKcal = Math.max(calories - proteinKcal - fatKcal, 0);
