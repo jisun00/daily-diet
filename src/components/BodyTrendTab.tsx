@@ -1,0 +1,158 @@
+import { useMemo, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useStore } from "../store/useStore";
+import { Button, Card, Field, inputClass, inputStyle } from "./Card";
+import { format } from "date-fns";
+
+const emptyForm = {
+  date: format(new Date(), "yyyy-MM-dd"),
+  weightKg: "",
+  skeletalMuscleKg: "",
+  bodyFatPercent: "",
+};
+
+export function BodyTrendTab() {
+  const bodyLogs = useStore((s) => s.bodyLogs);
+  const addBodyLog = useStore((s) => s.addBodyLog);
+  const deleteBodyLog = useStore((s) => s.deleteBodyLog);
+  const [form, setForm] = useState(emptyForm);
+
+  const chartData = useMemo(
+    () =>
+      bodyLogs.map((l) => ({
+        date: l.date.slice(5),
+        몸무게: l.weightKg,
+        골격근량: l.skeletalMuscleKg,
+        체지방률: l.bodyFatPercent,
+      })),
+    [bodyLogs],
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.weightKg) return;
+    addBodyLog({
+      date: form.date,
+      weightKg: Number(form.weightKg),
+      skeletalMuscleKg: form.skeletalMuscleKg ? Number(form.skeletalMuscleKg) : undefined,
+      bodyFatPercent: form.bodyFatPercent ? Number(form.bodyFatPercent) : undefined,
+    });
+    setForm({ ...emptyForm, date: form.date });
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Card title="체성분 기록 추가">
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Field label="날짜">
+            <input
+              type="date"
+              className={inputClass}
+              style={inputStyle}
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+            />
+          </Field>
+          <Field label="몸무게 (kg)">
+            <input
+              type="number"
+              step={0.1}
+              className={inputClass}
+              style={inputStyle}
+              value={form.weightKg}
+              onChange={(e) => setForm({ ...form, weightKg: e.target.value })}
+            />
+          </Field>
+          <Field label="골격근량 (kg)">
+            <input
+              type="number"
+              step={0.1}
+              className={inputClass}
+              style={inputStyle}
+              value={form.skeletalMuscleKg}
+              onChange={(e) => setForm({ ...form, skeletalMuscleKg: e.target.value })}
+            />
+          </Field>
+          <Field label="체지방률 (%)">
+            <input
+              type="number"
+              step={0.1}
+              className={inputClass}
+              style={inputStyle}
+              value={form.bodyFatPercent}
+              onChange={(e) => setForm({ ...form, bodyFatPercent: e.target.value })}
+            />
+          </Field>
+          <div className="col-span-2 sm:col-span-4">
+            <Button type="submit">추가</Button>
+          </div>
+        </form>
+      </Card>
+
+      <Card title="추이 그래프">
+        {chartData.length === 0 ? (
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            아직 기록이 없습니다.
+          </p>
+        ) : (
+          <div style={{ width: "100%", height: 280 }}>
+            <ResponsiveContainer>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="date" fontSize={12} stroke="var(--text-muted)" />
+                <YAxis fontSize={12} stroke="var(--text-muted)" />
+                <Tooltip
+                  contentStyle={{ background: "var(--surface)", borderColor: "var(--border)" }}
+                />
+                <Line type="monotone" dataKey="몸무게" stroke="#16a34a" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="골격근량" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="체지방률" stroke="#f97316" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </Card>
+
+      <Card title="기록 목록">
+        <div className="flex flex-col gap-2">
+          {[...bodyLogs]
+            .reverse()
+            .map((log) => (
+              <div
+                key={log.id}
+                className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
+                style={{ borderColor: "var(--border)" }}
+              >
+                <span className="font-medium">{log.date}</span>
+                <span>
+                  {log.weightKg}kg
+                  {log.skeletalMuscleKg ? ` · 골격근 ${log.skeletalMuscleKg}kg` : ""}
+                  {log.bodyFatPercent ? ` · 체지방 ${log.bodyFatPercent}%` : ""}
+                </span>
+                <button
+                  onClick={() => deleteBodyLog(log.id)}
+                  className="text-xs"
+                  style={{ color: "var(--warn)" }}
+                >
+                  삭제
+                </button>
+              </div>
+            ))}
+          {bodyLogs.length === 0 && (
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              아직 기록이 없습니다.
+            </p>
+          )}
+        </div>
+      </Card>
+    </div>
+  );
+}
