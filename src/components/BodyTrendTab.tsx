@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { useStore } from "../store/useStore";
 import { Button, Card, Field, NumberField, inputClass, inputStyle } from "./Card";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 
 const emptyForm = {
   date: format(new Date(), "yyyy-MM-dd"),
@@ -19,22 +19,39 @@ const emptyForm = {
   bodyFatPercent: 0,
 };
 
+type ChartRange = "1m" | "3m" | "6m" | "all";
+const RANGE_LABEL: Record<ChartRange, string> = {
+  "1m": "1개월",
+  "3m": "3개월",
+  "6m": "6개월",
+  all: "전체",
+};
+const RANGE_MONTHS: Record<ChartRange, number | null> = {
+  "1m": 1,
+  "3m": 3,
+  "6m": 6,
+  all: null,
+};
+
 export function BodyTrendTab() {
   const bodyLogs = useStore((s) => s.bodyLogs);
   const addBodyLog = useStore((s) => s.addBodyLog);
   const deleteBodyLog = useStore((s) => s.deleteBodyLog);
   const [form, setForm] = useState(emptyForm);
+  const [range, setRange] = useState<ChartRange>("3m");
 
-  const chartData = useMemo(
-    () =>
-      bodyLogs.map((l) => ({
+  const chartData = useMemo(() => {
+    const months = RANGE_MONTHS[range];
+    const cutoff = months !== null ? format(subMonths(new Date(), months), "yyyy-MM-dd") : null;
+    return bodyLogs
+      .filter((l) => cutoff === null || l.date >= cutoff)
+      .map((l) => ({
         date: l.date.slice(5),
         몸무게: l.weightKg,
         골격근량: l.skeletalMuscleKg,
         체지방률: l.bodyFatPercent,
-      })),
-    [bodyLogs],
-  );
+      }));
+  }, [bodyLogs, range]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,9 +106,24 @@ export function BodyTrendTab() {
       </Card>
 
       <Card title="추이 그래프">
-        {chartData.length === 0 ? (
+        <div className="mb-3 flex gap-1">
+          {(Object.keys(RANGE_LABEL) as ChartRange[]).map((r) => (
+            <Button
+              key={r}
+              variant={range === r ? "primary" : "secondary"}
+              onClick={() => setRange(r)}
+            >
+              {RANGE_LABEL[r]}
+            </Button>
+          ))}
+        </div>
+        {bodyLogs.length === 0 ? (
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             아직 기록이 없습니다.
+          </p>
+        ) : chartData.length === 0 ? (
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            선택한 기간({RANGE_LABEL[range]})에는 기록이 없습니다.
           </p>
         ) : (
           <div style={{ width: "100%", height: 280 }}>
