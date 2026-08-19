@@ -9,14 +9,14 @@ import {
   YAxis,
 } from "recharts";
 import { useStore } from "../store/useStore";
-import { Button, Card, Field, inputClass, inputStyle } from "./Card";
+import { Button, Card, Field, NumberField, inputClass, inputStyle } from "./Card";
 import { format } from "date-fns";
 
 const emptyForm = {
   date: format(new Date(), "yyyy-MM-dd"),
-  weightKg: "",
-  skeletalMuscleKg: "",
-  bodyFatPercent: "",
+  weightKg: 0,
+  skeletalMuscleKg: 0,
+  bodyFatPercent: 0,
 };
 
 export function BodyTrendTab() {
@@ -41,9 +41,9 @@ export function BodyTrendTab() {
     if (!form.weightKg) return;
     addBodyLog({
       date: form.date,
-      weightKg: Number(form.weightKg),
-      skeletalMuscleKg: form.skeletalMuscleKg ? Number(form.skeletalMuscleKg) : undefined,
-      bodyFatPercent: form.bodyFatPercent ? Number(form.bodyFatPercent) : undefined,
+      weightKg: form.weightKg,
+      skeletalMuscleKg: form.skeletalMuscleKg || undefined,
+      bodyFatPercent: form.bodyFatPercent || undefined,
     });
     setForm({ ...emptyForm, date: form.date });
   };
@@ -62,33 +62,24 @@ export function BodyTrendTab() {
             />
           </Field>
           <Field label="몸무게 (kg)">
-            <input
-              type="number"
-              step={0.1}
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.weightKg}
-              onChange={(e) => setForm({ ...form, weightKg: e.target.value })}
+              min={0}
+              onChange={(n) => setForm({ ...form, weightKg: n })}
             />
           </Field>
           <Field label="골격근량 (kg)">
-            <input
-              type="number"
-              step={0.1}
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.skeletalMuscleKg}
-              onChange={(e) => setForm({ ...form, skeletalMuscleKg: e.target.value })}
+              min={0}
+              onChange={(n) => setForm({ ...form, skeletalMuscleKg: n })}
             />
           </Field>
           <Field label="체지방률 (%)">
-            <input
-              type="number"
-              step={0.1}
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.bodyFatPercent}
-              onChange={(e) => setForm({ ...form, bodyFatPercent: e.target.value })}
+              min={0}
+              onChange={(n) => setForm({ ...form, bodyFatPercent: n })}
             />
           </Field>
           <div className="col-span-2 sm:col-span-4">

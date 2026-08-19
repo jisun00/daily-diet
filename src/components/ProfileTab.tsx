@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useStore } from "../store/useStore";
 import type { ActivityLevel, Profile, Sex } from "../types";
-import { ACTIVITY_LABEL, bmiCategory, calcBMI, calcBMR, calcTDEE } from "../lib/calc";
-import { Button, Card, Field, inputClass, inputStyle, Stat } from "./Card";
+import { ACTIVITY_LABEL, bmiCategory, calcBMI, calcBMR, calcTDEE, withResolvedWeight } from "../lib/calc";
+import { Button, Card, Field, NumberField, Stat, inputClass, inputStyle } from "./Card";
 
 const ACTIVITY_LEVELS: ActivityLevel[] = [
   "sedentary",
@@ -15,6 +15,7 @@ const ACTIVITY_LEVELS: ActivityLevel[] = [
 export function ProfileTab() {
   const profile = useStore((s) => s.profile);
   const setProfile = useStore((s) => s.setProfile);
+  const bodyLogs = useStore((s) => s.bodyLogs);
 
   const [form, setForm] = useState<Profile>(
     profile ?? {
@@ -23,7 +24,6 @@ export function ProfileTab() {
       heightCm: 160,
       weightKg: 60,
       activityLevel: "light",
-      occupation: "",
     },
   );
 
@@ -32,24 +32,23 @@ export function ProfileTab() {
     setProfile(form);
   };
 
-  const bmi = calcBMI(form);
+  const latestBodyLogWeight = bodyLogs.length > 0 ? bodyLogs[bodyLogs.length - 1].weightKg : null;
+  const analysisProfile = withResolvedWeight(form, bodyLogs);
+  const bmi = calcBMI(analysisProfile);
   const category = bmiCategory(bmi);
-  const bmr = calcBMR(form);
-  const tdee = calcTDEE(form);
+  const bmr = calcBMR(analysisProfile);
+  const tdee = calcTDEE(analysisProfile);
 
   return (
     <div className="flex flex-col gap-4">
       <Card title="기본정보 입력">
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <Field label="나이">
-            <input
-              type="number"
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.age}
               min={1}
               max={120}
-              onChange={(e) => setForm({ ...form, age: Number(e.target.value) })}
+              onChange={(n) => setForm({ ...form, age: n })}
             />
           </Field>
           <Field label="성별">
@@ -64,36 +63,19 @@ export function ProfileTab() {
             </select>
           </Field>
           <Field label="키 (cm)">
-            <input
-              type="number"
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.heightCm}
               min={100}
               max={250}
-              onChange={(e) => setForm({ ...form, heightCm: Number(e.target.value) })}
+              onChange={(n) => setForm({ ...form, heightCm: n })}
             />
           </Field>
           <Field label="몸무게 (kg)">
-            <input
-              type="number"
-              className={inputClass}
-              style={inputStyle}
+            <NumberField
               value={form.weightKg}
               min={20}
               max={300}
-              step={0.1}
-              onChange={(e) => setForm({ ...form, weightKg: Number(e.target.value) })}
-            />
-          </Field>
-          <Field label="직업 (선택)">
-            <input
-              type="text"
-              className={inputClass}
-              style={inputStyle}
-              placeholder="예: 사무직"
-              value={form.occupation ?? ""}
-              onChange={(e) => setForm({ ...form, occupation: e.target.value })}
+              onChange={(n) => setForm({ ...form, weightKg: n })}
             />
           </Field>
           <div className="col-span-2 sm:col-span-3">
@@ -118,6 +100,12 @@ export function ProfileTab() {
             <Button type="submit">저장</Button>
           </div>
         </form>
+        {latestBodyLogWeight !== null && (
+          <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
+            [체성분] 탭에 기록된 최신 몸무게({latestBodyLogWeight}kg)가 아래 분석에 자동으로
+            반영됩니다. 여기 몸무게 값은 체성분 기록이 없을 때만 사용돼요.
+          </p>
+        )}
       </Card>
 
       <Card title="분석 결과">

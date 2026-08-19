@@ -13,7 +13,6 @@ export interface Profile {
   heightCm: number;
   weightKg: number;
   activityLevel: ActivityLevel;
-  occupation?: string;
 }
 
 export interface BodyLog {

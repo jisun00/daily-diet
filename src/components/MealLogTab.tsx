@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useStore } from "../store/useStore";
 import type { FoodEntry, MealType } from "../types";
-import { calcDailyTargets, computeFoodEntry, sumFoodEntries } from "../lib/calc";
+import { calcDailyTargets, computeFoodEntry, sumFoodEntries, withResolvedWeight } from "../lib/calc";
 import { Button, Card, inputClass, inputStyle, Stat } from "./Card";
 import { FoodEntryForm } from "./FoodEntryForm";
 
@@ -16,6 +16,7 @@ const MEAL_LABEL: Record<MealType, string> = {
 
 export function MealLogTab() {
   const profile = useStore((s) => s.profile);
+  const bodyLogs = useStore((s) => s.bodyLogs);
   const goal = useStore((s) => s.goal);
   const meals = useStore((s) => s.meals);
   const favorites = useStore((s) => s.favorites);
@@ -32,7 +33,8 @@ export function MealLogTab() {
     (type) => meals.find((m) => m.date === date && m.type === type)?.items ?? [],
   );
   const dailyTotal = sumFoodEntries(allEntriesForDate);
-  const targets = profile && goal ? calcDailyTargets(profile, goal) : null;
+  const targets =
+    profile && goal ? calcDailyTargets(withResolvedWeight(profile, bodyLogs), goal) : null;
   const diff = targets ? dailyTotal.calories - targets.calories : 0;
 
   return (
@@ -64,10 +66,11 @@ export function MealLogTab() {
             [기본정보]와 [목표] 탭을 먼저 설정하면 목표 대비 비교가 표시됩니다.
           </p>
         )}
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-5">
           <Stat label="탄수화물" value={dailyTotal.carbsG} unit="g" />
           <Stat label="단백질" value={dailyTotal.proteinG} unit="g" />
           <Stat label="지방" value={dailyTotal.fatG} unit="g" />
+          <Stat label="당류" value={dailyTotal.sugarG} unit="g" />
           <Stat label="나트륨" value={dailyTotal.sodiumMg} unit="mg" />
         </div>
       </Card>
@@ -192,7 +195,7 @@ function FoodItemRow({
         <div className="font-medium">{item.name}</div>
         <div className="text-xs" style={{ color: "var(--text-muted)" }}>
           {item.intakeWeightG}g 섭취 (기준 {item.baseWeightG}g) · {computed.calories}kcal · 탄{" "}
-          {computed.carbsG} 단 {computed.proteinG} 지 {computed.fatG}
+          {computed.carbsG} 단 {computed.proteinG} 지 {computed.fatG} 당 {computed.sugarG}
         </div>
       </div>
       <div className="flex gap-2">

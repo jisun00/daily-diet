@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FavoriteFood, FoodEntry } from "../types";
 import { computeFoodEntry } from "../lib/calc";
-import { Button, Field, inputClass, inputStyle } from "./Card";
+import { Button, Field, NumberField, inputClass, inputStyle } from "./Card";
 
 type FormValues = Omit<FoodEntry, "id">;
 
@@ -101,87 +101,60 @@ export function FoodEntryForm({
           </Field>
         </div>
         <Field label="칼로리 산정 기준 중량 (g)">
-          <input
-            type="number"
-            min={1}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseWeightG}
-            onChange={(e) => setValues({ ...values, baseWeightG: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseWeightG: n })}
           />
         </Field>
         <Field label="칼로리 (kcal)">
-          <input
-            type="number"
-            min={0}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseCalories}
-            onChange={(e) => setValues({ ...values, baseCalories: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseCalories: n })}
           />
         </Field>
         <Field label="탄수화물 (g)">
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseCarbsG}
-            onChange={(e) => setValues({ ...values, baseCarbsG: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseCarbsG: n })}
           />
         </Field>
         <Field label="단백질 (g)">
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseProteinG}
-            onChange={(e) => setValues({ ...values, baseProteinG: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseProteinG: n })}
           />
         </Field>
         <Field label="지방 (g)">
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseFatG}
-            onChange={(e) => setValues({ ...values, baseFatG: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseFatG: n })}
           />
         </Field>
         <Field label="당류 (g)">
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseSugarG}
-            onChange={(e) => setValues({ ...values, baseSugarG: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseSugarG: n })}
           />
         </Field>
         <Field label="나트륨 (mg)">
-          <input
-            type="number"
-            min={0}
-            className={inputClass}
-            style={inputStyle}
+          <NumberField
             value={values.baseSodiumMg}
-            onChange={(e) => setValues({ ...values, baseSodiumMg: Number(e.target.value) })}
+            min={0}
+            onChange={(n) => setValues({ ...values, baseSodiumMg: n })}
           />
         </Field>
         <Field label="실제 섭취 중량 (g)">
-          <input
-            type="number"
-            min={0}
-            className={inputClass}
-            style={{ ...inputStyle, borderColor: "var(--accent)" }}
+          <NumberField
             value={values.intakeWeightG}
-            onChange={(e) => setValues({ ...values, intakeWeightG: Number(e.target.value) })}
+            min={0}
+            style={{ ...inputStyle, borderColor: "var(--accent)" }}
+            onChange={(n) => setValues({ ...values, intakeWeightG: n })}
           />
         </Field>
       </div>

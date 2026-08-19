@@ -21,7 +21,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { useStore } from "../store/useStore";
-import { calcDailyTargets, sumFoodEntries } from "../lib/calc";
+import { calcDailyTargets, sumFoodEntries, withResolvedWeight } from "../lib/calc";
 import { Button, Card, Stat } from "./Card";
 
 type Period = "day" | "week" | "month";
@@ -36,13 +36,15 @@ const MEAL_LABEL: Record<string, string> = {
 
 export function SummaryTab() {
   const profile = useStore((s) => s.profile);
+  const bodyLogs = useStore((s) => s.bodyLogs);
   const goal = useStore((s) => s.goal);
   const meals = useStore((s) => s.meals);
 
   const [period, setPeriod] = useState<Period>("week");
   const [anchor, setAnchor] = useState(new Date());
 
-  const targets = profile && goal ? calcDailyTargets(profile, goal) : null;
+  const targets =
+    profile && goal ? calcDailyTargets(withResolvedWeight(profile, bodyLogs), goal) : null;
 
   const range = useMemo(() => {
     if (period === "day") return { start: anchor, end: anchor };

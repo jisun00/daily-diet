@@ -1,4 +1,4 @@
-import type { ActivityLevel, FoodEntry, Goal, Profile } from "../types";
+import type { ActivityLevel, BodyLog, FoodEntry, Goal, Profile } from "../types";
 
 const ACTIVITY_MULTIPLIER: Record<ActivityLevel, number> = {
   sedentary: 1.2,
@@ -18,6 +18,18 @@ export const ACTIVITY_LABEL: Record<ActivityLevel, string> = {
 
 const KCAL_PER_KG_FAT = 7700;
 const MIN_SAFE_CALORIES = { male: 1500, female: 1200 };
+
+/** 체성분 기록이 있으면 가장 최근 몸무게를, 없으면 프로필의 몸무게를 사용 */
+export function resolveWeightKg(profile: Profile, bodyLogs: BodyLog[]): number {
+  if (bodyLogs.length === 0) return profile.weightKg;
+  return bodyLogs[bodyLogs.length - 1].weightKg;
+}
+
+/** bodyLogs의 최신 몸무게를 반영한 프로필 (BMI/BMR/TDEE/목표 계산용) */
+export function withResolvedWeight(profile: Profile, bodyLogs: BodyLog[]): Profile {
+  const weightKg = resolveWeightKg(profile, bodyLogs);
+  return weightKg === profile.weightKg ? profile : { ...profile, weightKg };
+}
 
 /** Mifflin-St Jeor 공식 기반 기초대사량(BMR, kcal/day) */
 export function calcBMR(profile: Profile): number {
