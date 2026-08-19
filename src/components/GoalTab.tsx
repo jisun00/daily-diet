@@ -112,11 +112,17 @@ export function GoalTab() {
             {targets.warning}
           </p>
         )}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Stat label="목표 칼로리" value={targets.calories} unit="kcal" accent="var(--accent)" />
-          <Stat label="탄수화물" value={targets.carbsG} unit="g" />
-          <Stat label="단백질" value={targets.proteinG} unit="g" />
-          <Stat label="지방" value={targets.fatG} unit="g" />
+        <div className="grid grid-cols-4 gap-2">
+          <Stat
+            label="목표 칼로리"
+            value={targets.calories}
+            unit="kcal"
+            accent="var(--accent)"
+            compact
+          />
+          <Stat label="탄수화물" value={targets.carbsG} unit="g" compact />
+          <Stat label="단백질" value={targets.proteinG} unit="g" compact />
+          <Stat label="지방" value={targets.fatG} unit="g" compact />
         </div>
         <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
           탄수화물은 별도로 입력하는 값이 아니라, 목표 칼로리에서 단백질·지방의 칼로리를 뺀

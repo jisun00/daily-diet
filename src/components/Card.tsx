@@ -25,21 +25,33 @@ export function Stat({
   value,
   unit,
   accent,
+  compact,
 }: {
   label: string;
   value: string | number;
   unit?: string;
   accent?: string;
+  /** Smaller text so 4-5 stats can sit on one row on a narrow phone screen. */
+  compact?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+    <div className="flex min-w-0 flex-col gap-0.5">
+      <span
+        className={`truncate ${compact ? "text-[10px]" : "text-xs"}`}
+        style={{ color: "var(--text-muted)" }}
+      >
         {label}
       </span>
-      <span className="text-xl font-bold" style={{ color: accent ?? "var(--text)" }}>
+      <span
+        className={`truncate font-bold ${compact ? "text-sm" : "text-xl"}`}
+        style={{ color: accent ?? "var(--text)" }}
+      >
         {value}
         {unit && (
-          <span className="ml-1 text-sm font-normal" style={{ color: "var(--text-muted)" }}>
+          <span
+            className={`ml-0.5 font-normal ${compact ? "text-[10px]" : "text-sm"}`}
+            style={{ color: "var(--text-muted)" }}
+          >
             {unit}
           </span>
         )}

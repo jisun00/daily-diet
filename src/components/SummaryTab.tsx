@@ -124,11 +124,17 @@ export function SummaryTab() {
 
       {period === "day" ? (
         <Card title="일일 섭취 요약">
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <Stat label="섭취 칼로리" value={dailyData[0]?.calories ?? 0} unit="kcal" accent="var(--accent)" />
-            {targets && <Stat label="목표 칼로리" value={targets.calories} unit="kcal" />}
-            <Stat label="탄수화물" value={dailyData[0]?.carbsG ?? 0} unit="g" />
-            <Stat label="단백질" value={dailyData[0]?.proteinG ?? 0} unit="g" />
+          <div className="grid grid-cols-4 gap-2">
+            <Stat
+              label="섭취 칼로리"
+              value={dailyData[0]?.calories ?? 0}
+              unit="kcal"
+              accent="var(--accent)"
+              compact
+            />
+            {targets && <Stat label="목표 칼로리" value={targets.calories} unit="kcal" compact />}
+            <Stat label="탄수화물" value={dailyData[0]?.carbsG ?? 0} unit="g" compact />
+            <Stat label="단백질" value={dailyData[0]?.proteinG ?? 0} unit="g" compact />
           </div>
           <div className="mt-4 flex flex-col gap-2">
             {dayMeals.map(({ type, totals }) => (
@@ -145,10 +151,10 @@ export function SummaryTab() {
         </Card>
       ) : (
         <Card title={`${period === "week" ? "주간" : "월간"} 섭취 칼로리`}>
-          <div className="mb-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <Stat label="합계" value={periodTotal} unit="kcal" />
-            <Stat label="기록된 날짜 평균" value={avgCalories} unit="kcal" accent="var(--accent)" />
-            {targets && <Stat label="목표(1일)" value={targets.calories} unit="kcal" />}
+          <div className="mb-3 grid grid-cols-3 gap-2">
+            <Stat label="합계" value={periodTotal} unit="kcal" compact />
+            <Stat label="기록된 날짜 평균" value={avgCalories} unit="kcal" accent="var(--accent)" compact />
+            {targets && <Stat label="목표(1일)" value={targets.calories} unit="kcal" compact />}
           </div>
           <div style={{ width: "100%", height: 280 }}>
             <ResponsiveContainer>

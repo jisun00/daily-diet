@@ -66,12 +66,12 @@ export function MealLogTab() {
             [기본정보]와 [목표] 탭을 먼저 설정하면 목표 대비 비교가 표시됩니다.
           </p>
         )}
-        <div className="mt-3 grid grid-cols-3 gap-3 sm:grid-cols-5">
-          <Stat label="탄수화물" value={dailyTotal.carbsG} unit="g" />
-          <Stat label="단백질" value={dailyTotal.proteinG} unit="g" />
-          <Stat label="지방" value={dailyTotal.fatG} unit="g" />
-          <Stat label="당류" value={dailyTotal.sugarG} unit="g" />
-          <Stat label="나트륨" value={dailyTotal.sodiumMg} unit="mg" />
+        <div className="mt-3 grid grid-cols-5 gap-1.5">
+          <Stat label="탄수화물" value={dailyTotal.carbsG} unit="g" compact />
+          <Stat label="단백질" value={dailyTotal.proteinG} unit="g" compact />
+          <Stat label="지방" value={dailyTotal.fatG} unit="g" compact />
+          <Stat label="당류" value={dailyTotal.sugarG} unit="g" compact />
+          <Stat label="나트륨" value={dailyTotal.sodiumMg} unit="mg" compact />
         </div>
       </Card>
 

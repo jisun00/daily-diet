@@ -119,11 +119,11 @@ export function ProfileTab() {
       </Card>
 
       <Card title="분석 결과">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Stat label="BMI" value={bmi.toFixed(1)} />
-          <Stat label="비만도" value={category.label} accent={category.colorVar} />
-          <Stat label="기초대사량 (BMR)" value={bmr} unit="kcal" />
-          <Stat label="활동대사량 (TDEE)" value={tdee} unit="kcal" />
+        <div className="grid grid-cols-4 gap-2">
+          <Stat label="BMI" value={bmi.toFixed(1)} compact />
+          <Stat label="비만도" value={category.label} accent={category.colorVar} compact />
+          <Stat label="기초대사량" value={bmr} unit="kcal" compact />
+          <Stat label="활동대사량" value={tdee} unit="kcal" compact />
         </div>
         {!profile && (
           <p className="mt-3 text-xs" style={{ color: "var(--text-muted)" }}>
